@@ -1,0 +1,82 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+const DiceGame = () => {
+  const [player1Score, setPlayer1Score] = useState(0);
+  const [player2Score, setPlayer2Score] = useState(0);
+  const [turn, setTurn] = useState(1);
+  const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [gameOver, setGameOver] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const rollDice = () => Math.floor(Math.random() * 6) + 1;
+
+  const playTurn = () => {
+    if (gameOver) return;
+
+    let roll = rollDice();
+    let resultMessage = message + `Turn ${turn}: Player ${currentPlayer} rolls ${roll}\n`;
+
+    if (currentPlayer === 1) {
+      const newP1Score = player1Score + roll;
+      if (newP1Score >= 20) {
+        setPlayer1Score(newP1Score);
+        setMessage(resultMessage + "Player 1 wins!");
+        setGameOver(true);
+        return;
+      }
+      setPlayer1Score(newP1Score);
+      setCurrentPlayer(2);
+    } else {
+      const newP2Score = player2Score + roll;
+      if (newP2Score >= 20) {
+        setPlayer2Score(newP2Score);
+        setMessage(resultMessage + "Player 2 wins!");
+        setGameOver(true);
+        return;
+      }
+      setPlayer2Score(newP2Score);
+      setCurrentPlayer(1);
+      setTurn(turn + 1);
+    }
+
+    setMessage(resultMessage);
+  };
+
+  const resetGame = () => {
+    setPlayer1Score(0);
+    setPlayer2Score(0);
+    setTurn(1);
+    setCurrentPlayer(1);
+    setMessage("");
+    setGameOver(false);
+  };
+
+  return (
+    <div className="p-6 max-w-xl mx-auto space-y-4">
+      <h1 className="text-2xl font-bold text-center">🎲 Dice Game</h1>
+      <Card>
+        <CardContent className="flex justify-between p-4">
+          <div>
+            <h2 className="text-xl font-semibold">Player 1</h2>
+            <p className="text-lg">Score: {player1Score}</p>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold">Player 2</h2>
+            <p className="text-lg">Score: {player2Score}</p>
+          </div>
+        </CardContent>
+      </Card>
+      <div className="space-y-2">
+        <pre className="bg-gray-100 p-3 rounded text-sm whitespace-pre-wrap">{message}</pre>
+        <div className="flex gap-2">
+          <Button onClick={playTurn} disabled={gameOver}>Player {currentPlayer}'s Turn</Button>
+          <Button onClick={resetGame} variant="outline">Reset Game</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DiceGame;
